@@ -9,6 +9,7 @@ import com.opencsv.exceptions.CsvException;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +38,28 @@ public class SoutenanceService {
             soutenanceRepository.saveAll(soutenances);
         }
     }
+//find by id
 
-    // Ajout manuel via formulaire
+    public Optional<Soutenance> getSoutenance(Long id)
+    {
+        return soutenanceRepository.findById(id);
+    }
+    //delete by id
+    public void deleteSoutenance(Long id)
+    {
+         soutenanceRepository.deleteById(id);
+    }
+    //ajout via formulaire
     public Soutenance addSoutenance(Soutenance soutenance) {
-        return soutenanceRepository.save(soutenance);
+        // Set only the fields you want to save
+        Soutenance newSoutenance = new Soutenance();
+        newSoutenance.setNomEtudiant(soutenance.getNomEtudiant());
+        newSoutenance.setEmail(soutenance.getEmail());
+        newSoutenance.setTitrePfe(soutenance.getTitrePfe());
+        newSoutenance.setEncadrant(soutenance.getEncadrant());
+
+        // Save the entity (id will be auto-generated)
+        return soutenanceRepository.save(newSoutenance);
     }
 
     //  Mise à jour après planification
