@@ -2,7 +2,6 @@ package com.Autentification.Autentification.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,13 +11,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+    public User() {
+        // constructeur par défaut requis pour Hibernate, DTO, etc.
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,12 +34,18 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String firstname, String lastname, String email, String encode, Role role) {
-        this.firstname=firstname;
-        this.lastname=lastname;
-        this.email=email;
-        this.password=encode;
-        this.role=role;
+    // 👇 Ajout d’un constructeur spécifique sans l’ID (utile pour register)
+    public User(String firstname, String lastname, String email, String password, Role role) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     public Long getId() {
@@ -74,10 +80,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -91,8 +93,8 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+    public String getPassword() {
+        return "";
     }
 
     @Override
